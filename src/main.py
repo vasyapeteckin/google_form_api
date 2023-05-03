@@ -39,6 +39,14 @@ class GoogleFormAPI:
 
         return result
 
+    @staticmethod
+    def generate_payload(fields: list[dict], answers: list[str]) -> dict:
+        payload = {}
+        for field, answer in zip(fields, answers):
+            payload[f"entry.{field['id']}"] = answer
+            # print(f"{field['title']}: {answer}")
+        return payload
+
     async def close_session(self):
         await self.session.close()
 
