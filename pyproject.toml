@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "google-form-api"
+version = "0.1.0"
+authors = [
+    { name = "Vasya Peteckin", email = "unik128@gmail.com" },
+]
+
+description = "Asynchronous Module for filling Google Forms"
+readme = "README.md"
+requires-python = ">=3.7"
+
+license = "MIT"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+keywords = ["google", "form", "api"]
+
+dependencies = [
+    "ua-generator>=0.1.8",
+    "aiohttp>=3.8.4",
+    "aiohttp-proxy>=0.1.2"
+]
+
+[project.urls]
+Homepage = "https://github.com/vasyapeteckin/google_form_api"

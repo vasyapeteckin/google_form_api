@@ -19,7 +19,7 @@ class GoogleFormAPI:
         self.session = ClientSession(headers={'user-agent': user_agent},
                                      connector=connector)
 
-    async def get_google_form_fields(self, form_url: str) -> list[dict]:
+    async def _get_google_form_fields(self, form_url: str) -> list[dict]:
         result = []
         async with self.session.get(form_url) as response:
             response_text = await response.text()
@@ -40,23 +40,25 @@ class GoogleFormAPI:
         return result
 
     @staticmethod
-    def generate_payload(fields: list[dict], answers: list[str]) -> dict:
+    def _generate_payload(fields: list[dict], answers: list[str]) -> dict:
         payload = {}
         for field, answer in zip(fields, answers):
             payload[f"entry.{field['id']}"] = answer
             # print(f"{field['title']}: {answer}")
         return payload
 
-    async def close_session(self):
+    async def _post_data(self, form_url: str, payload: dict) -> int:
+        async with self.session.post(f'{form_url.rsplit("/", 1)[0]}/formResponse', data=payload) as response:
+            return response.status
+
+    async def _close_session(self):
         await self.session.close()
 
+    async def submit_form(self, form_url: str, answers: list[str]):
+        form_fields = await self._get_google_form_fields(form_url=form_url)
+        payload = self._generate_payload(form_fields, answers)
+        status = await self._post_data(form_url=form_url,
+                                       payload=payload)
 
-if __name__ == '__main__':
-    async def main():
-        test = GoogleFormAPI()
-        result = await test.get_google_form_fields(form_url='https://docs.google.com/forms/d/e/1FAIpQLSeE5LYyyywhU5ScFv61eAUpjkAR1PiT-0PC4mV5ywjA0pOqGQ/viewform?usp=sharing')
-        print(result)
-        await test.close_session()
-
-
-    asyncio.run(main())
+        await self._close_session()
+        return status
